@@ -1,0 +1,23 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: macos-12
+    env:
+      DEVELOPER_DIR: /Applications/Xcode_13.3.1.app/Contents/Developer
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - target: "arm64-apple-ios15.4-simulator"
+          - target: "x86_64-apple-ios15.4-simulator"
+    steps:
+    - uses: actions/checkout@v2
+    - name: "Swift Package Manager build"
+      run: swift build -Xswiftc "-sdk" -Xswiftc "`xcrun --sdk iphonesimulator --show-sdk-path`" -Xswiftc "-target" -Xswiftc "${{ matrix.target }}"
